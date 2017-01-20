@@ -55,7 +55,7 @@ S_M2 = S_B + S_W;           %S_M2 and S_M don't perfectly match...
 % selection method. The best features are stored in the vector 'select'. 
 % The value of their selection criterion in the vector 'J1'.
 select = [];
-for i = 1:5
+for i = 1:10
     clear Performance
     for j = 1:19
         featloop = [select j];
@@ -72,8 +72,11 @@ plotf(dataset(:,select));
 
 %%
 %classifing, knnc as example
-features = dataset(:,select(1:2));
+features = dataset(:,select(1:10));
 figure;
 scatterd(features,'legend');
-w = knnc(features,4);
-hold on; plotc(w);
+w1 = knnc(features,4);
+w2 = parzenc(features);
+w  = meanc([w1, w2]);
+testd(features, w)
+% hold on; plotc(w);
