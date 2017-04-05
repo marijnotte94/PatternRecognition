@@ -1,17 +1,20 @@
 m = prnist([0:9],[1:5:1000]);
 data = seldat(m);
-%resizing images so every image is same size
-resized = im_resize(data,[128,128]);
-dataset = im_features(resized);
+boxed = im_box([],0,1);
+resized = im_resize([],[128,128], 'bicubic');
+boxedinv = im_box([],1,0);
+boxed_resized = boxed*resized*boxedinv;
+dataset = im_features(data*boxed_resized);
+
 %Leave out irrelevant features
-%dataset = dataset(:,[1 3:14 18:23]);
+%dataset = dataset(:,[1 3:14 18:24]);
 
 %Outlier removal
 dataset = remoutl(dataset);
-
+%%
 %Scaling data
 %Maybe using the softmax scaling can be a good idea.
-%dataset = dataset*scalem(dataset,'variance');
+dataset = dataset*scalem(dataset,'variance');
 
 %%
 % Feature selection based on individual features
@@ -78,7 +81,7 @@ end
 %the acquired error rate
 %feature extraction works better than selection
 [trn,tst] = gendat(dataset,.5)
-clsf = svc;
+clsf = ldc;
 featnum = [1:1:23];
 mf = 21;
 [w,r] = featselb(trn,'eucl-m',mf);
@@ -95,7 +98,7 @@ plote({e2},'noapperror')
 %%
 %trying first feature extraction, than selection
 [trn,tst] = gendat(dataset,.5)
-clsf = s;
+clsf = ldc;
 featnum = [1:1:23];
 w1 = pcam(trn,21);
 w2 = trn*w1;
@@ -104,7 +107,7 @@ e = clevalf(trn,clsf,featnum,[],1,tst);
 e1 = clevalf(w2*w,clsf);
 %%
 figure;
-plote(e2,'noapperror');
+plote(e1,'noapperror');
 
 
 
