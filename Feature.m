@@ -1,3 +1,4 @@
+%{
 m = prnist(0:9,1:200:1000);
 
 %%
@@ -9,6 +10,7 @@ profile = im_features(resized);
 dataset_profile = prdataset(profile);
 %datamoments = im_moments(resized);
 plote(clevalf(dataset_profile,pcam))
+
 %%
 %dataset = [datafeatures prdataset(dataprofile) prdataset(datamoments)];
 clf = {nmc,ldc,knnc,parzenc,fisherc,loglc,neurc,treec}*pcam;
@@ -20,21 +22,35 @@ datascaled = dataset_profile*scalem(dataset_profile,'variance');
 e1 = clevalf(Train*w,clf,featnum,[],1,Test*w);
 figure;
 plote(e1,'noapperror')
-%%
-m = prnist(0:9,1:400:1000);
-
-data = seldat(m);
-resized = im_resize(data,[128,128],'bicubic');
-
-features = im_profile(resized);
-A = prdataset(profile);
-W = A * pcam;
-B = A*W;
-V = B*featsel;
-E = clevalf(A*W,{nmc,ldc,knnc,parzenc,fisherc,loglc,neurc,treec});
-figure;
-plote(E,'noapperror');
-axis([1 23 0 1])
-
-
 %}
+%%
+m = prnist(0:9,1:1:1000);
+repset = gendat(m, [5,5,5,5,5,5,5,5,5,5]);
+data = seldat(repset);
+resized = im_resize(data,[128,128],'bicubic');
+dataset = pr_dataset(resized);
+
+
+features = im_profile(dataset);
+mapping = fisherm;
+classifier = ldc;
+
+A = prdataset(features);
+W = A * mapping;
+B = A*W;
+
+[Train,Test] = gendat(B,0.5);
+Train*(Test*(mapping*classifier))*testc
+
+
+
+
+
+
+
+
+
+
+
+
+
